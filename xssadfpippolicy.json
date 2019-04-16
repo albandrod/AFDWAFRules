@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "apiVersion": "2018-08-01",
+            "name": "PIPCustomPolicy",
+            "location": "Global",
+            "properties": {
+                "policySettings": {
+                    "enabledState": "Enabled",
+                    "mode": "Prevention"
+                },
+                "customRules": {
+                    "rules": [
+                        {
+                            "name": "AllowCLTHomeOffice",
+                            "priority": 1,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 0,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RemoteAddr",
+                                    "operator": "IPMatch",
+                                    "negateCondition": false,
+                                    "matchValue": [
+                                        "13.12.11.10"
+                                    ]
+                                }
+                            ],
+                            "action": "Allow"
+                        },
+                        {
+                            "name": "DenyAllOnXSS",
+                            "priority": 2,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 0,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RemoteAddr",
+                                    "operator": "Any",
+                                    "negateCondition": false
+                                }
+                            ],
+                            "action": "Block"
+                        }
+                    ]
+                },
+                "managedRules": {
+                    "ruleSets": []
+                }
+            }
+        }
+    ]
+}
